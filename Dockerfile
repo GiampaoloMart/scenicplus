@@ -6,6 +6,9 @@ ENV MAMBA_DOCKERFILE_ACTIVATE=1
 ENV MAMBA_ROOT_PREFIX=/opt/conda
 ENV PATH=$MAMBA_ROOT_PREFIX/bin:$PATH
 
+# Cambia l'utente a root per installare i pacchetti
+USER root
+
 # Aggiorna il sistema e installa gli strumenti di compilazione e git
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
