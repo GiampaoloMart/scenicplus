@@ -15,8 +15,8 @@ RUN micromamba install -n scenicplus -c conda-forge git pip -y
 # Imposta l'ambiente di lavoro
 WORKDIR /scenicplus
 
-# Clona il repository ScenicPlus
-RUN git clone https://github.com/aertslab/scenicplus .
+# Attiva l'ambiente e clona il repository ScenicPlus
+RUN micromamba run -n scenicplus git clone https://github.com/aertslab/scenicplus .
 
 # Installa i pacchetti richiesti con pip senza usare cache
 RUN micromamba run -n scenicplus pip install --no-cache-dir .
