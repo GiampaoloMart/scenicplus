@@ -9,6 +9,9 @@ ENV PATH=$MAMBA_ROOT_PREFIX/bin:$PATH
 # Aggiungi il canale conda-forge e crea l'ambiente Micromamba con Python 3.11
 RUN micromamba create -n scenicplus -c conda-forge python=3.11 -y
 
+# Installa Git dal canale conda-forge
+RUN micromamba install -c conda-forge git --yes
+
 # Installa pip e gli strumenti di compilazione per le dipendenze problematiche
 RUN micromamba install -n scenicplus -c conda-forge pip -y
 
