@@ -6,13 +6,11 @@ ENV MAMBA_DOCKERFILE_ACTIVATE=1
 ENV MAMBA_ROOT_PREFIX=/opt/conda
 ENV PATH=$MAMBA_ROOT_PREFIX/bin:$PATH
 
-# Installa strumenti di compilazione e dipendenze di sistema
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
+# Installa strumenti di compilazione e dipendenze di sistema utilizzando apk
+RUN apk add --no-cache \
+    build-base \
     git \
-    python3-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    python3-dev
 
 # Crea l'ambiente Micromamba con Python 3.11 specificando il canale conda-forge
 RUN micromamba create -n scenicplus -c conda-forge python=3.11 -y
@@ -31,3 +29,4 @@ RUN micromamba run -n scenicplus pip install --no-cache-dir .
 
 # Imposta l'ambiente Micromamba come predefinito all'avvio
 CMD [ "/bin/bash", "-c", "micromamba activate scenicplus && exec bash" ]
+
