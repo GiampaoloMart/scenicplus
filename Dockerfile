@@ -6,11 +6,11 @@ ENV MAMBA_DOCKERFILE_ACTIVATE=1
 ENV MAMBA_ROOT_PREFIX=/opt/conda
 ENV PATH=$MAMBA_ROOT_PREFIX/bin:$PATH
 
-# Crea l'ambiente Micromamba con Python 3.11
-RUN micromamba create -n scenicplus python=3.11 -y
+# Crea l'ambiente Micromamba con Python 3.11 specificando il canale conda-forge
+RUN micromamba create -n scenicplus -c conda-forge python=3.11 -y
 
 # Installa git e pip nell'ambiente scenicplus
-RUN micromamba install -n scenicplus git pip -y
+RUN micromamba install -n scenicplus -c conda-forge git pip -y
 
 # Imposta l'ambiente di lavoro
 WORKDIR /scenicplus
