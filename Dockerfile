@@ -22,23 +22,21 @@ RUN apt-get update && \
 # Create working directory
 WORKDIR /scenicplus
 
-# Create conda environment and install dependencies
-# Using separate RUN commands to ensure proper execution
-COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml /tmp/environment.yml
+# Create the environment file
+RUN echo "name: scenicplus\nchannels:\n  - conda-forge\n  - defaults\ndependencies:\n  - python=3.11\n  - pip" > /tmp/environment.yml
 
-RUN micromamba env create -f /tmp/environment.yml && \
-    micromamba clean --all --yes
+# Create the environment
+RUN micromamba env create -f /tmp/environment.yml
 
-# Clone and install ScenicPlus
-RUN micromamba activate scenicplus && \
-    git clone https://github.com/aertslab/scenicplus . && \
-    pip install --no-cache-dir .
+# Install ScenicPlus
+SHELL ["/bin/bash", "-c"]
+RUN micromamba run -n scenicplus git clone https://github.com/aertslab/scenicplus . && \
+    micromamba run -n scenicplus pip install --no-cache-dir .
 
-# Switch back to non-root user for security
+# Switch back to non-root user
 USER $MAMBA_USER
 
-# Set the default environment to activate
-ENV ENV_NAME=scenicplus
-
-# Keep the container running
-CMD ["/bin/bash"]
+# Set the default shell and activate the environment
+SHELL ["/bin/bash", "-c"]
+ENTRYPOINT ["/usr/local/bin/_entrypoint.sh"]
+CMD ["micromamba", "run", "-n", "scenicplus", "/bin/bash"]
