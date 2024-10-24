@@ -7,10 +7,17 @@ ENV MAMBA_DOCKERFILE_ACTIVATE=1 \
     PATH=$MAMBA_ROOT_PREFIX/bin:$PATH \
     DEBIAN_FRONTEND=noninteractive
 
+# Copy environment file
+COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yaml /tmp/env.yaml
+
+# Create the environment using micromamba
+RUN micromamba install -y -n base -f /tmp/env.yaml && \
+    micromamba clean --all --yes
+
 # Switch to root for system updates and installations
 USER root
 
-# Install system dependencies in a single layer
+# Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
@@ -22,21 +29,14 @@ RUN apt-get update && \
 # Create working directory
 WORKDIR /scenicplus
 
-# Create the environment file
-RUN echo "name: scenicplus\nchannels:\n  - conda-forge\n  - defaults\ndependencies:\n  - python=3.11\n  - pip" > /tmp/environment.yml
-
-# Create the environment
-RUN micromamba env create -f /tmp/environment.yml
-
 # Install ScenicPlus
 SHELL ["/bin/bash", "-c"]
-RUN micromamba run -n scenicplus git clone https://github.com/aertslab/scenicplus . && \
-    micromamba run -n scenicplus pip install --no-cache-dir .
+RUN git clone https://github.com/aertslab/scenicplus . && \
+    pip install --no-cache-dir .
 
 # Switch back to non-root user
 USER $MAMBA_USER
 
-# Set the default shell and activate the environment
-SHELL ["/bin/bash", "-c"]
+# Set the default shell
 ENTRYPOINT ["/usr/local/bin/_entrypoint.sh"]
-CMD ["micromamba", "run", "-n", "scenicplus", "/bin/bash"]
+CMD ["/bin/bash"]
